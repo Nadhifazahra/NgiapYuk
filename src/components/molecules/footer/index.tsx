@@ -72,13 +72,13 @@ function Footer() {
         <Separator className='my-[50px] bg-separator-foreground'/>
         <div className='flex items-center justify-between'>
           <Image
-            src='/images/logo-white.svg'
-            alt='nidejia'
+            src='/images/logo_nginap.svg'
+            alt='nginapyuk'
             height={36}
             width={133}
           />
           <span className='leading-6 text-white'>  
-            All Rights Reserved Nidejia BuildWithAngga 2024
+            All Rights Reserved NginapYuk 2024
           </span>
         </div>
       </div>

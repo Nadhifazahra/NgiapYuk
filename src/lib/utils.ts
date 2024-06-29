@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 const moneyFormat = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "USD",
+  currency: "IDR",
 });
 
 export { moneyFormat };

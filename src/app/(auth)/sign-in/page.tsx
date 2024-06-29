@@ -15,8 +15,10 @@ import {
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/atomics/use-toast";
+import { useLoginMutation } from "@/services/auth.service";
+import { signIn } from "next-auth/react";
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -27,6 +29,7 @@ type FormData = yup.InferType<typeof schema>;
 
 function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const form = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -35,16 +38,40 @@ function SignIn() {
       password: "",
     },
   });
+  const [login, { isLoading }] = useLoginMutation();
 
-  function onSubmit(values: FormData) {
-    console.log("🚀 ~ onSubmit ~ values:", values);
-    form.reset();
-    toast({
-      title: "Welcome",
-      description: "Sign in successfully",
-      open: true,
-    });
-    router.push("/");
+  async function onSubmit(values: FormData) {
+    try {
+      const res = await login(values).unwrap();
+
+      if (res.success) {
+        const user = res.data;
+
+        const loginRes = await signIn("credentials", {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          token: user.token,
+          callbackUrl: searchParams.get("callbackUrl") || "/",
+          redirect: false,
+        });
+        toast({
+          title: "Welcome",
+          description: "Sign in successfully",
+          open: true,
+        });
+
+        router.push(loginRes?.url || "/");
+      }
+
+      // router.push("/");
+    } catch (error: any) {
+      toast({
+        title: "Something went wrong",
+        description: error.data.message,
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -52,7 +79,7 @@ function SignIn() {
       className={`px-6 py-24 lg:px-28 bg-primary-foreground bg-cover lg:bg-contain bg-right bg-no-repeat bg-[url('/images/bg-image.svg')] h-screen flex items-center`}
     >
       <div className="p-8 bg-white rounded-[30px] max-w-full lg:max-w-[460px] lg:min-w-[460px] space-y-[30px]">
-        <Image src="/images/logo.svg" alt="nidejia" height={36} width={133} />
+        <Image src="/images/logo_nginap.svg" alt="nginapyuk" height={36} width={133} />
         <Title
           title="Sign In"
           subtitle="Rent and make money online"
@@ -118,7 +145,9 @@ function SignIn() {
                 Remember me
               </label>
             </div>
-            <Button type="submit">Sign In</Button>
+            <Button type="submit" disabled={isLoading}>
+              Sign In
+            </Button>
             <Link href="/sign-up">
               <Button variant="third" type="button" className="mt-3">
                 Create New Account

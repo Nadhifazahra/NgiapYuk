@@ -22,7 +22,7 @@ function Home() {
           <div className="max-w-[555px]">
             <Title
               title="Find Glorious Living And Loving Space"
-              subtitle="Dolor house comfortable si amet with cheap price that also lorem when you need grow."
+              subtitle="Comfortable and Affordable, Perfect for When You Need to Grow."
               section="hero"
             />
             <div className="pt-[50px] flex items-center">
